@@ -1,0 +1,62 @@
+body {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+#choices {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #007aff;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+#game {
+    background-color: #fff;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#result {
+    margin-top: 20px;
+}
+
+.ad-container {
+    width: 100%; /* 広告の幅をページ幅いっぱいにする */
+    padding: 10px 0; /* 上下に少し余白をつける */
+    background-color: #f4f4f4; /* 背景色 */
+    text-align: center; /* コンテンツを中央寄せ */
+    margin-bottom: 20px; /* 下部に余白をつける */
+}
