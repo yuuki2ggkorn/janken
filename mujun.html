@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="css/mujun.css">
+    <link rel="stylesheet" href="css/output.css">
+    <title>矛盾遊戯</title>
+</head>
+
+<body class="bg-gray-200 p-5">
+    <div class="container mx-auto">
+        <section>
+            <img src="./img/CgH8aOZUMAA4AYt.jpg" alt="" width="400">
+            <h1 class="text-center text-3xl font-bold mb-4">嘘喰いのじゃんけん「矛盾遊戯」</h1>
+        </section>
+        <div class="rules mb-5">
+            <h2 class="text-xl font-bold">ルール説明:</h2>
+            <p><span class="font-bold">セットアップ:</span> ゲームは3ゲームで1セット。各プレーヤーの初期ビオス（通貨）は100から500の間でランダムに決定される。</p>
+            <p><span class="font-bold">役割の選択: </span>セット開始時に、プレーヤーは盾選択側と矛選択側に分かれる。</p>
+            <p><span class="font-bold">アイテムの選択: </span>ゲーム開始時、プレーヤーは3種類の盾または矛の中から1つを選ぶ。この選択は相手には秘密にされる。</p>
+            <p><span class="font-bold">選択の制約: </span>同一セット内で、既に選んだ盾や矛は再度選ぶことができない。</p>
+            <p><span class="font-bold">ビオスの入札: </span>プレーヤーはビオスを提示し、提示額が多いプレーヤーが攻撃側になる。</p>
+            <p><span class="font-bold">ゲームの進行: </span>攻撃側と防御側が決まったら、1ゲームが進行される。攻撃と防御の結果によって、ビオスが減少する。</p>
+            <p><span class="font-bold">再選択と再入札: </span>ゲーム終了後、プレーヤーは盾と矛を再選択し、新たにビオスを入札する。これをもう1ゲーム行う。</p>
+            <p><span class="font-bold">勝敗判定: </span>ビオスが尽きたプレーヤーが負け。体力が0となり先に倒れた側が負けとなる。</p>
+        </div>
+
+        <div class="game-area">
+            <div class="player-info mb-5">
+                <h3 class="text-lg font-bold">プレーヤー情報:</h3>
+                <p>所持ビオス: <span id="player-bios">100</span></p>
+                <p>体力: <span id="player-health">10</span></p>
+            </div>
+
+            <div class="enemy-status mb-5">
+                <h3 class="text-lg font-bold">敵の状態:</h3>
+                <p>体力: <span id="enemy-health">10</span></p>
+                <p>所持ビオス: <span id="enemy-bios">100</span></p>
+            </div>
+
+            <div class="role-selection mb-5">
+                <h3 class="text-lg font-bold">役割のランダム選択:</h3>
+                <button id="role-select-btn"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">役割を選ぶ</button>
+                <p>選ばれた役割: <span id="selected-role">未選択</span></p>
+            </div>
+
+            <div class="selection-area mb-5">
+                <h3 class="text-lg font-bold">盾と矛の選択:</h3>
+                <button class="shield-btn mx-2" disabled>鉄の盾</button>
+                <button class="shield-btn mx-2" disabled>ゴムの盾</button>
+                <button class="shield-btn mx-2" disabled>木の盾</button>
+                <button class="spear-btn mx-2" disabled>日本刀</button>
+                <button class="spear-btn mx-2" disabled>スタンガン</button>
+                <button class="spear-btn mx-2" disabled>銃</button>
+            </div>
+
+
+            <div class="bios-bid mb-5">
+                <h3 class="text-lg font-bold">ビオスの入札:</h3>
+                <input type="number" id="bios-input" placeholder="ビオスを入力" class="border p-2">
+                <button id="bid-btn" class="ml-2">入札</button>
+            </div>
+
+            <div class="result-area">
+                <h3 class="text-lg font-bold">ゲーム結果:</h3>
+                <p id="game-result">【コメント】ルールが複雑すぎる！！！</p>
+            </div>
+        </div>
+    </div>
+
+    <footer></footer>
+
+    <script>
+        $(document).ready(function () {
+            let playerHealth = 10;
+            let enemyHealth = 10;
+            let playerBios = Math.floor(Math.random() * 401) + 100; // 100から500の間のランダムな値
+            let enemyBios = Math.floor(Math.random() * 401) + 100;
+            let playerRole = ""; // プレーヤーが選んだ盾か矛
+            let enemyRole = ""; // 敵が選ぶ盾か矛
+            let bidAmount = 0;
+            let enemyBidAmount = 0;
+
+            // プレーヤーの初期状態を表示
+            $('#player-health').text(playerHealth);
+            $('#player-bios').text(playerBios);
+
+            // 敵の初期状態を表示
+            $('#enemy-health').text(enemyHealth);
+            $('#enemy-bios').text(enemyBios);
+
+            // 役割選択
+            $('#role-select-btn').click(function () {
+                // ランダムに盾か矛を選ぶ
+                playerRole = Math.random() < 0.5 ? "盾" : "矛";
+                enemyRole = playerRole === "盾" ? "矛" : "盾"; // プレーヤーとは異なる役割を選ぶ
+
+                // 選んだ役割に応じてボタンを活性化
+                if (playerRole === "盾") {
+                    $('.shield-btn').prop('disabled', false);
+                } else {
+                    $('.spear-btn').prop('disabled', false);
+                }
+
+                $('#selected-role').text(playerRole);
+            });
+
+            // 盾の選択
+            $('.shield-btn').click(function () {
+                // 盾を選び、選択した盾を無効にする
+                $(this).prop('disabled', true);
+            });
+
+            // 矛の選択
+            $('.spear-btn').click(function () {
+                // 矛を選び、選択した矛を無効にする
+                $(this).prop('disabled', true);
+            });
+
+            // ビオスの入札
+            $('#bid-btn').click(function () {
+                bidAmount = parseInt($('#bios-input').val());
+                enemyBidAmount = Math.floor(Math.random() * enemyBios);
+
+                if (bidAmount > playerBios) {
+                    alert('所持ビオスが足りません！');
+                    return;
+                }
+
+                playerBios -= bidAmount;
+                enemyBios -= enemyBidAmount;
+
+                // ビオスと体力の更新
+                $('#player-bios').text(playerBios);
+                $('#enemy-bios').text(enemyBios);
+
+                // 攻撃権とダメージの計算
+                let damage = 0;
+                if (bidAmount >= enemyBidAmount) {
+                    // プレーヤーが攻撃
+                    damage = calculateDamage(playerRole, enemyRole);
+                    enemyHealth -= damage;
+                } else {
+                    // 敵が攻撃
+                    damage = calculateDamage(enemyRole, playerRole);
+                    playerHealth -= damage;
+                }
+
+                // 体力の更新
+                $('#player-health').text(playerHealth);
+                $('#enemy-health').text(enemyHealth);
+
+                // 勝敗の判定
+                if (playerHealth <= 0 || enemyHealth <= 0) {
+                    let result = playerHealth <= 0 ? "負け" : "勝ち";
+                    $('#game-result').text("ゲーム結果: " + result);
+                }
+
+                // 他のロジックもここに追加...
+            });
+
+            function calculateDamage(attackerRole, attackerWeapon, defenderWeapon) {
+                // 矛が攻撃権を持っている場合
+                if (attackerRole === "矛") {
+                    switch (attackerWeapon) {
+                        case "日本刀":
+                            return defenderWeapon === "木の盾" ? 8 : (defenderWeapon === "ゴムの盾" ? 4 : 0);
+                        case "スタンガン":
+                            return defenderWeapon === "木の盾" ? 1 : (defenderWeapon === "鉄の盾" ? 4 : 0);
+                        case "銃":
+                            return defenderWeapon !== "鉄の盾" ? 8 : 0;
+                        default:
+                            return 0;
+                    }
+                }
+
+                // 盾が攻撃権を持っている場合
+                if (attackerRole === "盾") {
+                    return 1; // 盾からの攻撃は常に1ダメージ
+                }
+
+                // それ以外の場合はダメージなし
+                return 0;
+            }
+
+            // 他の関数も必要に応じて追加...
+        });
+
+    </script>
+</body>
+
+</html>

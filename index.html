@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="css/sample.css">
+    <link rel="stylesheet" href="css/output.css">
+    <title>じゃんけんゲーム</title>
+</head>
+
+<body>
+    <header>
+        <h1 class="text-center">じゃんけん</h1>
+    </header>
+
+    <main class="bg-gray-100 h-screen flex flex-col items-center justify-center">
+        <div id="choices" class="mb-4">
+            <button class="btn" data-choice="rock">グー</button>
+            <button class="btn" data-choice="scissors">チョキ</button>
+            <button class="btn" data-choice="paper">パー</button>
+        </div>
+        <div id="game" class="p-4 bg-white rounded shadow-lg text-center">
+            <div id="result" class="text-lg font-bold">選んでね</div>
+        </div>
+    </main>
+
+    <footer></footer>
+    <div id="ad-bottom" class="ad-container">
+        <script async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3828264847032034"
+            crossorigin="anonymous"></script>
+        <!-- じゃんけん用 -->
+        <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3828264847032034"
+            data-ad-slot="8113777824" data-ad-format="auto" data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+    <script>
+        //じゃんけん用のSCRIPTを書いてください
+        $(document).ready(function () {
+            const hands = ['rock', 'scissors', 'paper'];
+
+            $('#choices').on('click', '.btn', function () {
+                const userChoice = $(this).attr('data-choice');
+                const computerChoice = hands[Math.floor(Math.random() * hands.length)];
+                $('#result').html(determineWinner(userChoice, computerChoice));
+            });
+
+            function translateHand(hand) {
+                switch (hand) {
+                    case 'rock':
+                        return 'グー';
+                    case 'scissors':
+                        return 'チョキ';
+                    case 'paper':
+                        return 'パー';
+                    default:
+                        return '';
+                }
+            }
+
+            function determineWinner(user, computer) {
+                let result;
+                if (user === computer) {
+                    result = 'あいこ！';
+                } else if (
+                    (user === 'rock' && computer === 'scissors') ||
+                    (user === 'scissors' && computer === 'paper') ||
+                    (user === 'paper' && computer === 'rock')
+                ) {
+                    result = '勝ち！';
+                } else {
+                    result = '負け...';
+                }
+                return `敵の手:${translateHand(computer)}<br><br>結果: ${result}`;
+            }
+        });
+
+    </script>
+</body>
+
+</html>
